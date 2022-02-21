@@ -1,5 +1,5 @@
 {
-  "name": "delete-this",
+  "name": "sveltekit-skeleton",
   "version": "0.0.1",
   "scripts": {
     "dev": "svelte-kit dev",
@@ -12,9 +12,9 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
-    "prettier": "2.5.1",
-    "prettier-plugin-svelte": "2.6.0",
-    "svelte": "3.46.4"
+    "prettier": "^2.5.1",
+    "prettier-plugin-svelte": "^2.5.0",
+    "svelte": "^3.44.0"
   },
   "type": "module"
 }
