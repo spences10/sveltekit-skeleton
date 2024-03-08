@@ -37,7 +37,7 @@ devDependencies:
     version: 3.6.6(postcss@8.4.24)(svelte@4.0.0)
   typescript:
     specifier: ^5.0.0
-    version: 5.1.3
+    version: 5.4.2
   vite:
     specifier: ^5.0.0
     version: 5.0.0
@@ -561,7 +561,7 @@ packages:
       debug: 4.3.4
       deepmerge: 4.3.1
       kleur: 4.1.5
-      magic-string: 0.30.7
+      magic-string: 0.30.8
       svelte: 4.0.0
       svelte-hmr: 0.15.3(svelte@4.0.0)
       vite: 5.0.0
@@ -1401,6 +1401,13 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
+  /magic-string@0.30.8:
+    resolution: {integrity: sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
+
   /mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
     dev: true
@@ -1873,8 +1880,8 @@ packages:
       picocolors: 1.0.0
       sade: 1.8.1
       svelte: 4.0.0
-      svelte-preprocess: 5.1.3(postcss@8.4.24)(svelte@4.0.0)(typescript@5.1.3)
-      typescript: 5.1.3
+      svelte-preprocess: 5.1.3(postcss@8.4.24)(svelte@4.0.0)(typescript@5.4.2)
+      typescript: 5.4.2
     transitivePeerDependencies:
       - '@babel/core'
       - coffeescript
@@ -1911,7 +1918,7 @@ packages:
       svelte: 4.0.0
     dev: true
 
-  /svelte-preprocess@5.1.3(postcss@8.4.24)(svelte@4.0.0)(typescript@5.1.3):
+  /svelte-preprocess@5.1.3(postcss@8.4.24)(svelte@4.0.0)(typescript@5.4.2):
     resolution: {integrity: sha512-xxAkmxGHT+J/GourS5mVJeOXZzne1FR5ljeOUAMXUkfEhkLEllRreXpbl3dIYJlcJRfL1LO1uIAPpBpBfiqGPw==}
     engines: {node: '>= 16.0.0', pnpm: ^8.0.0}
     requiresBuild: true
@@ -1956,7 +1963,7 @@ packages:
       sorcery: 0.11.0
       strip-indent: 3.0.0
       svelte: 4.0.0
-      typescript: 5.1.3
+      typescript: 5.4.2
     dev: true
 
   /svelte@4.0.0:
@@ -2032,8 +2039,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /typescript@5.1.3:
-    resolution: {integrity: sha512-XH627E9vkeqhlZFQuL+UsyAXEnibT0kWR2FWONlr4sTjvxyJYnyefgrkyECLzM5NenmKzRAy2rR/OlYLA1HkZw==}
+  /typescript@5.4.2:
+    resolution: {integrity: sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
