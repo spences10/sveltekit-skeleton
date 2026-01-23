@@ -1,8 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			// Read theme from cookie and apply it immediately to prevent flash
+			const themeCookie = document.cookie
+				.split(';')
+				.find((c) => c.trim().startsWith('theme='));
+			if (themeCookie) {
+				const theme = themeCookie.split('=')[1];
+				if (theme === 'dark' || theme === 'light') {
+					document.documentElement.setAttribute('data-theme', theme);
+				}
+			}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
