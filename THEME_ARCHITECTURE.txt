@@ -1,0 +1,151 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║           THEME TOGGLE WITH COOKIE PERSISTENCE - ARCHITECTURE              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          FILE STRUCTURE                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  src/                                                                       │
+│  ├── app.html                          ← data-theme="light" attribute      │
+│  ├── lib/                                                                   │
+│  │   ├── theme.svelte.ts              ← State management (Svelte store)    │
+│  │   └── ThemeToggle.svelte           ← Interactive toggle component      │
+│  └── routes/                                                               │
+│      ├── +layout.svelte               ← Initialize theme, add header      │
+│      ├── +layout.server.ts            ← Read theme cookie                 │
+│      └── api/                                                              │
+│          └── theme/                                                        │
+│              └── +server.ts           ← Update theme cookie               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    REQUEST/RESPONSE FLOW                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  INITIAL PAGE LOAD (SSR):                                                  │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   │
+│                                                                             │
+│   Browser          Server              Database                            │
+│     │                │                     │                               │
+│     ├─ GET / ───────>│                     │                               │
+│     │                ├─ read cookie ──────>│ (theme=dark)                 │
+│     │                │<─ return data ──────│                               │
+│     │                │                     │                               │
+│     │ render with    │                     │                               │
+│     │ data-theme=    │                     │                               │
+│     │<─ HTML ────────│                     │                               │
+│     │                                      │                               │
+│  (No FOUC! Correct theme rendered)         │                               │
+│                                            │                               │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   │
+│                                                                             │
+│  THEME TOGGLE (CLIENT):                                                    │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   │
+│                                                                             │
+│   Browser                              Server                              │
+│     │                                    │                                 │
+│     ├─ User clicks toggle                │                                 │
+│     │                                    │                                 │
+│     ├─ store.toggle()                    │                                 │
+│     │  (updates immediately)             │                                 │
+│     │                                    │                                 │
+│     ├─ document.data-theme = 'dark'      │                                 │
+│     │  (visual change instant)           │                                 │
+│     │                                    │                                 │
+│     ├─ POST /api/theme ───────────────>│                                 │
+│     │  { theme: 'dark' }                 │                                 │
+│     │                                    ├─ Set-Cookie: theme=dark        │
+│     │                                    │                                 │
+│     │<─ { success: true } ──────────────│                                 │
+│     │                                    │                                 │
+│  (Cookie persists for 1 year)            │                                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    DATA FLOW - SVELTE STORE                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│                              themeStore                                     │
+│                              ┌─────────┐                                   │
+│                              │ writable│                                   │
+│                              └─────────┘                                   │
+│                                  │                                         │
+│                    ┌─────────────┼─────────────┐                           │
+│                    │             │             │                           │
+│               ┌────▼───┐   ┌────▼───┐   ┌────▼──────┐                     │
+│               │subscribe│   │  set   │   │  toggle   │                     │
+│               │         │   │        │   │  & init   │                     │
+│               └────┬────┘   └────┬───┘   └────┬──────┘                     │
+│                    │             │             │                           │
+│                    └─────────────┼─────────────┘                           │
+│                                  │                                         │
+│                          Updates Document:                                │
+│                          data-theme='light'│                              │
+│                          or data-theme='dark'                             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      COMPONENT HIERARCHY                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   src/routes/+layout.svelte                                                │
+│   │                                                                         │
+│   ├── <header>                                                             │
+│   │   ├── <h1>My App</h1>                                                 │
+│   │   └── <ThemeToggle />    ◄── Uses themeStore                          │
+│   │       │                                                               │
+│   │       ├── <input checkbox />                                          │
+│   │       ├── <svg sun icon />                                            │
+│   │       └── <svg moon icon />                                           │
+│   │                                                                        │
+│   └── <main>                                                              │
+│       └── {@render children()}                                            │
+│                                                                            │
+│   onMount hook:                                                           │
+│   ├── themeStore.init(data.theme)  ◄── From +layout.server.ts            │
+│   └── Subscribe to store changes                                         │
+│                                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    COOKIE PERSISTENCE TIMELINE                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   Time │ Action                    │ Cookie           │ Persists          │
+│   ─────┼──────────────────────────┼──────────────────┼──────────────────  │
+│   0:00 │ First visit               │ [not set]        │ until set         │
+│        │ (defaults to light)       │ → light          │ for 1 year        │
+│        │                           │                  │                   │
+│   0:01 │ User toggles to dark      │ dark             │ for 1 year        │
+│        │ API call updates cookie   │ (refreshed)      │ from toggle time  │
+│        │                           │                  │                   │
+│   2:00 │ Browser closed            │ dark (persisted) │ in browser        │
+│        │                           │                  │                   │
+│   3:00 │ Browser reopened          │ dark (loaded)    │ still valid       │
+│        │ Page load reads cookie    │ no change        │ for ~364 days     │
+│        │                           │                  │                   │
+│  365d  │ Cookie expires            │ removed          │ defaults to light │
+│        │ on next visit             │ → light          │ on next visit     │
+│        │                           │                  │                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      FEATURES CHECKLIST                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ✅  Cookie Persistence           - 1 year expiration                      │
+│  ✅  SSR Safe                      - No flash of unstyled content          │
+│  ✅  Instant Visual Feedback       - Immediate DOM update                  │
+│  ✅  Error Handling                - Revert on API failure                 │
+│  ✅  Loading States                - Disabled during request               │
+│  ✅  TypeScript Support            - Full type safety                      │
+│  ✅  daisyUI Integration           - Uses swap component                   │
+│  ✅  Accessible                    - Proper form controls                  │
+│  ✅  Mobile Friendly               - Touch-responsive toggle               │
+│  ✅  Dark/Light Themes             - Easy theme switching                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
